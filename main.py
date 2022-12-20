@@ -1,6 +1,8 @@
 from typing import List
-from telethon import TelegramClient, events, sync, utils
+from telethon import TelegramClient, events, utils
 from telethon.tl.types import Message
+
+import config
 from config import *
 import asyncio
 import os
@@ -8,7 +10,6 @@ import json
 from email.mime.image import MIMEImage
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
-from email.message import EmailMessage
 import smtplib, ssl
 
 client = TelegramClient('bot_session', api_id, api_hash)
@@ -52,7 +53,7 @@ async def send_mail(report_id, username, reason, description, filename, subject)
 @client.on(events.NewMessage(pattern='/report'))
 async def report(event):
     report_id = f"{event.sender_id}_{event.message.id}"
-    await event.reply('Мы отправили вам форму для отправки жалобы в личные сообщения\nПожалуйста, перейдите в личные сообщения и заполните жалобу по форме')
+    await event.reply('Мы отправили вам форму для написания жалобы в личные сообщения\nПожалуйста, перейдите в личные сообщения и заполните жалобу по форме')
     await client.send_message(entity=event.sender_id, message="Заполните жалобу:")
 
     conversation = await client.get_entity(event.sender_id)
@@ -107,7 +108,7 @@ async def report(event):
                     description=description_message.message,
                     filename=screenshots,
                     subject=f"Report #{report_id}")
-    await client.send_message(entity=209298668, message=text, file=screenshots)
+    await client.send_message(entity=config.Channel_id, message=text, file=screenshots)
 
 
 if __name__ == '__main__':
